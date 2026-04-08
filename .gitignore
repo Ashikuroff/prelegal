@@ -1,0 +1,8 @@
+# Node
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+.DS_Store
+.env
+prelegal.db

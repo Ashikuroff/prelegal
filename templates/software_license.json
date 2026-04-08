@@ -1,0 +1,5 @@
+{
+  "Software License": {
+    "template": "Software License Agreement\n\nLicensor: {{licensor}}\n\nLicensee: {{licensee}}\n\nSoftware: {{software}}\n\nType: {{license_type}}\n\nTerm: {{term}}\n\nFees: {{fees}}\n\nRestrictions: {{restrictions}}"
+  }
+}

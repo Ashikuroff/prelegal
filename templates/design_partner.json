@@ -1,0 +1,5 @@
+{
+  "Design Partner": {
+    "template": "Design Partnership Agreement\n\nDesigner: {{designer_name}}\n\nClient: {{client_name}}\n\nScope: {{project_scope}}\n\nDeliverables: {{deliverables}}\n\nTimeline: {{timeline}}\n\nFees: {{fees}}\n\nIP Rights: {{intellectual_property}}"
+  }
+}

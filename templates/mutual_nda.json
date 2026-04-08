@@ -1,0 +1,8 @@
+{
+  "Mutual NDA": {
+    "template": "This Mutual Non-Disclosure Agreement (\"Agreement\") is entered into as of {{effective_date}} by and between {{party1_name}}, located at {{party1_address}} (\"Party 1\") and {{party2_name}}, located at {{party2_address}} (\"Party 2\").\n\n1. Definition of Confidential Information\n\n2. Obligations\n\n3. Term: {{confidentiality_period}} years\n\n4. Governing Law: {{jurisdiction}}"
+  },
+  "Cloud Service Agreement": {
+    "template": "Cloud Service Agreement between {{provider_name}} and {{client_name}}.\n\nServices: {{services_description}}\n\nTerm: From {{term_start}} to {{term_end}}\n\nPayment Terms: {{payment_terms}}\n\nData Protection: {{data_protection}}"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "BAA": {
+    "template": "Business Associate Agreement\n\nCovered Entity: {{covered_entity}}\n\nAssociate: {{business_associate}}\n\nServices: {{services}}\n\nUses: {{permitted_uses}}\n\nSafeguards: {{safeguards}}\n\nReporting: {{breach_reporting}}\n\nTerm: {{term}}"
+  }
+}

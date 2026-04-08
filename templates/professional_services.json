@@ -1,0 +1,5 @@
+{
+  "Professional Services": {
+    "template": "Professional Services Agreement\n\nProvider: {{service_provider}}\n\nClient: {{client}}\n\nServices: {{services}}\n\nFees: {{fees}}\n\nTimeline: {{timeline}}\n\nWarranties: {{warranties}}\n\nTermination: {{termination}}"
+  }
+}
