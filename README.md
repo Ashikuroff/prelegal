@@ -1,0 +1,2 @@
+# prelegal
+Legal doc generator
