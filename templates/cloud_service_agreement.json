@@ -1,0 +1,5 @@
+{
+  "Cloud Service Agreement": {
+    "template": "Cloud Service Agreement between {{provider_name}} and {{client_name}}.\n\nServices: {{services_description}}\n\nTerm: From {{term_start}} to {{term_end}}\n\nPayment Terms: {{payment_terms}}\n\nData Protection: {{data_protection}}"
+  }
+}

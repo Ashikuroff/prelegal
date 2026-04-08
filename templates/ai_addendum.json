@@ -1,0 +1,5 @@
+{
+  "AI Addendum": {
+    "template": "AI Usage Addendum\n\nParties: {{parties}}\n\nUsage: {{ai_usage}}\n\nSources: {{data_sources}}\n\nConsiderations: {{ethical_considerations}}\n\nLiability: {{liability}}\n\nIP: {{intellectual_property}}\n\nTerm: {{term}}"
+  }
+}

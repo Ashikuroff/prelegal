@@ -1,0 +1,5 @@
+{
+  "DPA": {
+    "template": "Data Processing Agreement\n\nController: {{data_controller}}\n\nProcessor: {{data_processor}}\n\nProcessing: {{data_processing}}\n\nSecurity: {{security_measures}}\n\nRights: {{data_subject_rights}}\n\nNotification: {{breach_notification}}\n\nTerm: {{term}}"
+  }
+}
