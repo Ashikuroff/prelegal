@@ -1,0 +1,135 @@
+{
+  "documents": [
+    {
+      "type": "Mutual NDA",
+      "fields": [
+        {"name": "party1_name", "label": "Party 1 Name", "type": "text", "required": true},
+        {"name": "party1_address", "label": "Party 1 Address", "type": "text", "required": true},
+        {"name": "party2_name", "label": "Party 2 Name", "type": "text", "required": true},
+        {"name": "party2_address", "label": "Party 2 Address", "type": "text", "required": true},
+        {"name": "effective_date", "label": "Effective Date", "type": "date", "required": true},
+        {"name": "confidentiality_period", "label": "Confidentiality Period (years)", "type": "number", "required": true},
+        {"name": "jurisdiction", "label": "Jurisdiction", "type": "text", "required": true}
+      ]
+    },
+    {
+      "type": "Cloud Service Agreement",
+      "fields": [
+        {"name": "provider_name", "label": "Provider Name", "type": "text", "required": true},
+        {"name": "client_name", "label": "Client Name", "type": "text", "required": true},
+        {"name": "services_description", "label": "Services Description", "type": "textarea", "required": true},
+        {"name": "term_start", "label": "Term Start Date", "type": "date", "required": true},
+        {"name": "term_end", "label": "Term End Date", "type": "date", "required": true},
+        {"name": "payment_terms", "label": "Payment Terms", "type": "textarea", "required": true},
+        {"name": "data_protection", "label": "Data Protection Clause", "type": "textarea", "required": true}
+      ]
+    },
+    {
+      "type": "Pilot Agreement",
+      "fields": [
+        {"name": "parties", "label": "Parties Involved", "type": "text", "required": true},
+        {"name": "pilot_description", "label": "Pilot Description", "type": "textarea", "required": true},
+        {"name": "duration", "label": "Duration", "type": "text", "required": true},
+        {"name": "objectives", "label": "Objectives", "type": "textarea", "required": true},
+        {"name": "compensation", "label": "Compensation", "type": "textarea", "required": true},
+        {"name": "termination", "label": "Termination Conditions", "type": "textarea", "required": true}
+      ]
+    },
+    {
+      "type": "Design Partner",
+      "fields": [
+        {"name": "designer_name", "label": "Designer Name", "type": "text", "required": true},
+        {"name": "client_name", "label": "Client Name", "type": "text", "required": true},
+        {"name": "project_scope", "label": "Project Scope", "type": "textarea", "required": true},
+        {"name": "deliverables", "label": "Deliverables", "type": "textarea", "required": true},
+        {"name": "timeline", "label": "Timeline", "type": "text", "required": true},
+        {"name": "fees", "label": "Fees", "type": "text", "required": true},
+        {"name": "intellectual_property", "label": "Intellectual Property Rights", "type": "textarea", "required": true}
+      ]
+    },
+    {
+      "type": "SLA",
+      "fields": [
+        {"name": "service_provider", "label": "Service Provider", "type": "text", "required": true},
+        {"name": "customer", "label": "Customer", "type": "text", "required": true},
+        {"name": "services", "label": "Services Covered", "type": "textarea", "required": true},
+        {"name": "uptime_guarantee", "label": "Uptime Guarantee (%)", "type": "number", "required": true},
+        {"name": "response_time", "label": "Response Time", "type": "text", "required": true},
+        {"name": "penalties", "label": "Penalties for Breach", "type": "textarea", "required": true},
+        {"name": "term", "label": "Term", "type": "text", "required": true}
+      ]
+    },
+    {
+      "type": "Professional Services",
+      "fields": [
+        {"name": "service_provider", "label": "Service Provider", "type": "text", "required": true},
+        {"name": "client", "label": "Client", "type": "text", "required": true},
+        {"name": "services", "label": "Services to be Provided", "type": "textarea", "required": true},
+        {"name": "fees", "label": "Fees", "type": "text", "required": true},
+        {"name": "timeline", "label": "Timeline", "type": "text", "required": true},
+        {"name": "warranties", "label": "Warranties", "type": "textarea", "required": true},
+        {"name": "termination", "label": "Termination", "type": "textarea", "required": true}
+      ]
+    },
+    {
+      "type": "Partnership",
+      "fields": [
+        {"name": "partners", "label": "Partners", "type": "text", "required": true},
+        {"name": "partnership_purpose", "label": "Partnership Purpose", "type": "textarea", "required": true},
+        {"name": "contribution", "label": "Contribution of Each Partner", "type": "textarea", "required": true},
+        {"name": "profit_sharing", "label": "Profit Sharing", "type": "textarea", "required": true},
+        {"name": "management", "label": "Management Structure", "type": "textarea", "required": true},
+        {"name": "duration", "label": "Duration", "type": "text", "required": true},
+        {"name": "dissolution", "label": "Dissolution Terms", "type": "textarea", "required": true}
+      ]
+    },
+    {
+      "type": "Software License",
+      "fields": [
+        {"name": "licensor", "label": "Licensor", "type": "text", "required": true},
+        {"name": "licensee", "label": "Licensee", "type": "text", "required": true},
+        {"name": "software", "label": "Software Description", "type": "textarea", "required": true},
+        {"name": "license_type", "label": "License Type", "type": "text", "required": true},
+        {"name": "term", "label": "Term", "type": "text", "required": true},
+        {"name": "fees", "label": "Fees", "type": "text", "required": true},
+        {"name": "restrictions", "label": "Restrictions", "type": "textarea", "required": true}
+      ]
+    },
+    {
+      "type": "DPA",
+      "fields": [
+        {"name": "data_controller", "label": "Data Controller", "type": "text", "required": true},
+        {"name": "data_processor", "label": "Data Processor", "type": "text", "required": true},
+        {"name": "data_processing", "label": "Data Processing Description", "type": "textarea", "required": true},
+        {"name": "security_measures", "label": "Security Measures", "type": "textarea", "required": true},
+        {"name": "data_subject_rights", "label": "Data Subject Rights", "type": "textarea", "required": true},
+        {"name": "breach_notification", "label": "Breach Notification", "type": "textarea", "required": true},
+        {"name": "term", "label": "Term", "type": "text", "required": true}
+      ]
+    },
+    {
+      "type": "BAA",
+      "fields": [
+        {"name": "covered_entity", "label": "Covered Entity", "type": "text", "required": true},
+        {"name": "business_associate", "label": "Business Associate", "type": "text", "required": true},
+        {"name": "services", "label": "Services", "type": "textarea", "required": true},
+        {"name": "permitted_uses", "label": "Permitted Uses and Disclosures", "type": "textarea", "required": true},
+        {"name": "safeguards", "label": "Safeguards", "type": "textarea", "required": true},
+        {"name": "breach_reporting", "label": "Breach Reporting", "type": "textarea", "required": true},
+        {"name": "term", "label": "Term", "type": "text", "required": true}
+      ]
+    },
+    {
+      "type": "AI Addendum",
+      "fields": [
+        {"name": "parties", "label": "Parties", "type": "text", "required": true},
+        {"name": "ai_usage", "label": "AI Usage Description", "type": "textarea", "required": true},
+        {"name": "data_sources", "label": "Data Sources", "type": "textarea", "required": true},
+        {"name": "ethical_considerations", "label": "Ethical Considerations", "type": "textarea", "required": true},
+        {"name": "liability", "label": "Liability for AI Outputs", "type": "textarea", "required": true},
+        {"name": "intellectual_property", "label": "Intellectual Property", "type": "textarea", "required": true},
+        {"name": "term", "label": "Term", "type": "text", "required": true}
+      ]
+    }
+  ]
+}

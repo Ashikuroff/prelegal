@@ -1,0 +1,5 @@
+{
+  "Pilot Agreement": {
+    "template": "Pilot Agreement\n\nParties: {{parties}}\n\nDescription: {{pilot_description}}\n\nDuration: {{duration}}\n\nObjectives: {{objectives}}\n\nCompensation: {{compensation}}\n\nTermination: {{termination}}"
+  }
+}

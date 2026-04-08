@@ -1,0 +1,5 @@
+{
+  "Partnership": {
+    "template": "Partnership Agreement\n\nPartners: {{partners}}\n\nPurpose: {{partnership_purpose}}\n\nContributions: {{contribution}}\n\nProfit Sharing: {{profit_sharing}}\n\nManagement: {{management}}\n\nDuration: {{duration}}\n\nDissolution: {{dissolution}}"
+  }
+}

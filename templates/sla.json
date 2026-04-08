@@ -1,0 +1,5 @@
+{
+  "SLA": {
+    "template": "Service Level Agreement\n\nProvider: {{service_provider}}\n\nCustomer: {{customer}}\n\nServices: {{services}}\n\nUptime: {{uptime_guarantee}}%\n\nResponse Time: {{response_time}}\n\nPenalties: {{penalties}}\n\nTerm: {{term}}"
+  }
+}
