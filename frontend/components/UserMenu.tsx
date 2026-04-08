@@ -7,44 +7,20 @@ export default function UserMenu() {
 
   if (!user) return null;
 
+  const initials = user.email.slice(0, 2).toUpperCase();
+
   return (
-    <div style={{ position: 'relative' }}>
+    <div className="user-chip">
       <button
         onClick={() => setShowMenu(!showMenu)}
-        style={{
-          position: 'fixed',
-          top: '20px',
-          left: '20px',
-          padding: '10px',
-          backgroundColor: '#032147',
-          color: 'white',
-          border: 'none',
-          cursor: 'pointer'
-        }}
+        className="user-trigger"
       >
-        {user.email}
+        <span className="user-avatar">{initials}</span>
+        <span>{user.email}</span>
       </button>
       {showMenu && (
-        <div style={{
-          position: 'absolute',
-          top: '50px',
-          left: '20px',
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          borderRadius: '5px',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-        }}>
-          <button
-            onClick={logout}
-            style={{
-              width: '100%',
-              padding: '10px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              textAlign: 'left'
-            }}
-          >
+        <div className="popover">
+          <button onClick={logout} className="ghost-button" style={{ width: '100%', textAlign: 'left' }}>
             Sign Out
           </button>
         </div>

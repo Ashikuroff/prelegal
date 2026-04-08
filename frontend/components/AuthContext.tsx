@@ -36,10 +36,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me');
+      const response = await fetch('/api/auth/me', { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setUser(data);
+      } else {
+        setUser(null);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -52,6 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const response = await fetch('/api/auth/signin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
     if (!response.ok) throw new Error('Login failed');
@@ -62,6 +65,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const response = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
     if (!response.ok) throw new Error('Signup failed');
@@ -69,7 +73,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = async () => {
-    await fetch('/api/auth/signout', { method: 'POST' });
+    await fetch('/api/auth/signout', { method: 'POST', credentials: 'include' });
     setUser(null);
   };
 

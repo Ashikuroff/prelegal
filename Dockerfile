@@ -50,6 +50,7 @@ COPY backend/ backend/
 COPY --from=frontend-build /app/frontend/out /app/static
 
 # Copy catalog.json and .env
+COPY catalog.json /app/catalog.json
 COPY catalog.json /app/static/
 COPY templates/ /app/templates/
 COPY .env ./

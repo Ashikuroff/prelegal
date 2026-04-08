@@ -6,11 +6,13 @@ export default function AuthForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const { login, signup } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     try {
       if (isLogin) {
         await login(email, password);
@@ -18,60 +20,59 @@ export default function AuthForm() {
         await signup(email, password);
       }
     } catch (error) {
-      alert('Authentication failed');
+      setError('Authentication failed. Check your email and password and try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px' }}>
-      <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ width: '100%', marginBottom: '10px', padding: '8px' }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ width: '100%', marginBottom: '10px', padding: '8px' }}
-        />
+    <div className="auth-shell">
+      <div className="auth-card">
+        <div className="eyebrow">Prelegal Workspace</div>
+        <h2>{isLogin ? 'Secure client access' : 'Create your workspace'}</h2>
+        <p className="lede">
+          Draft legal agreements with a guided assistant, structured templates, and saved document history.
+        </p>
+        <form onSubmit={handleSubmit} className="form-stack">
+          <div>
+            <label className="field-label">Email</label>
+            <input
+              className="field-input"
+              type="email"
+              placeholder="name@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="field-label">Password</label>
+            <input
+              className="field-input"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          {error ? <div className="status-pill">{error}</div> : null}
+          <button type="submit" disabled={loading} className="primary-button">
+            {loading ? 'Working...' : isLogin ? 'Sign In' : 'Create Account'}
+          </button>
+        </form>
         <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '10px',
-            backgroundColor: '#753991',
-            color: 'white',
-            border: 'none',
-            cursor: 'pointer'
+          onClick={() => {
+            setIsLogin(!isLogin);
+            setError('');
           }}
+          className="ghost-button"
+          style={{ width: '100%', marginTop: '14px' }}
         >
-          {loading ? 'Loading...' : (isLogin ? 'Login' : 'Sign Up')}
+          {isLogin ? 'Need an account? Create one' : 'Already have an account? Sign in'}
         </button>
-      </form>
-      <button
-        onClick={() => setIsLogin(!isLogin)}
-        style={{
-          width: '100%',
-          padding: '10px',
-          backgroundColor: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          marginTop: '10px'
-        }}
-      >
-        {isLogin ? 'Need an account? Sign Up' : 'Have an account? Login'}
-      </button>
+      </div>
     </div>
   );
 }

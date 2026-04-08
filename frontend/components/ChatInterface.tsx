@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import { useAuth } from './AuthContext';
+import { useEffect, useRef, useState } from 'react';
 
 interface Message {
   id: string;
@@ -19,202 +18,319 @@ interface DocumentType {
   fields: Field[];
 }
 
-export default function ChatInterface() {
+interface SavedDocument {
+  id: number;
+  title: string;
+  document_type: string;
+  fields: Record<string, string>;
+  created_at: string;
+}
+
+interface ChatResponse {
+  response: string;
+  fields: Record<string, string>;
+  document_type: string | null;
+  complete: boolean;
+}
+
+export default function ChatInterface({
+  loadedDocument,
+  resetCounter,
+}: {
+  loadedDocument: SavedDocument | null;
+  resetCounter: number;
+}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [documentType, setDocumentType] = useState<DocumentType | null>(null);
-  const [fields, setFields] = useState<Record<string, any>>({});
+  const [fields, setFields] = useState<Record<string, string>>({});
   const [catalog, setCatalog] = useState<DocumentType[]>([]);
   const [savedDocId, setSavedDocId] = useState<number | null>(null);
+  const [statusMessage, setStatusMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch('/api/chat/greeting')
-      .then(res => res.json())
-      .then(data => {
-        setMessages([{ id: '1', text: data.greeting, sender: 'ai' }]);
-      });
-
     fetch('/catalog.json')
-      .then(res => res.json())
-      .then(data => setCatalog(data.documents));
+      .then((res) => res.json())
+      .then((data) => setCatalog(data.documents));
   }, []);
+
+  useEffect(() => {
+    fetch('/api/chat/greeting', { credentials: 'include' })
+      .then((res) => res.json())
+      .then((data) => {
+        setMessages([{ id: 'greeting', text: data.greeting, sender: 'ai' }]);
+      });
+  }, [resetCounter]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [messages, loading]);
+
+  useEffect(() => {
+    if (!loadedDocument || catalog.length === 0) {
+      return;
+    }
+
+    const matchedType = catalog.find((doc) => doc.type === loadedDocument.document_type) || null;
+    setDocumentType(matchedType);
+    setFields(loadedDocument.fields || {});
+    setSavedDocId(loadedDocument.id);
+    setStatusMessage(`Loaded "${loadedDocument.title}".`);
+    setMessages([
+      {
+        id: `loaded-${loadedDocument.id}`,
+        text: `Loaded saved ${loadedDocument.document_type}. You can continue editing and download a fresh PDF when ready.`,
+        sender: 'ai',
+      },
+    ]);
+  }, [loadedDocument, catalog, resetCounter]);
+
+  useEffect(() => {
+    if (loadedDocument) {
+      return;
+    }
+    setDocumentType(null);
+    setFields({});
+    setSavedDocId(null);
+    setStatusMessage('');
+  }, [resetCounter, loadedDocument]);
+
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    const trimmed = input.trim();
+    if (!trimmed) {
+      return;
+    }
 
     const userMessage: Message = {
-      id: Date.now().toString(),
-      text: input,
-      sender: 'user'
+      id: `user-${Date.now()}`,
+      text: trimmed,
+      sender: 'user',
     };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
+    setStatusMessage('');
 
     try {
       const response = await fetch('/api/chat/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        credentials: 'include',
+        body: JSON.stringify({
+          message: trimmed,
+          document_type: documentType?.type || null,
+          current_fields: fields,
+        }),
       });
-      const data = await response.json();
 
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: data.response,
-        sender: 'ai'
-      };
-      setMessages(prev => [...prev, aiMessage]);
-
-      if (data.fields) {
-        setFields(prev => ({ ...prev, ...data.fields }));
+      if (!response.ok) {
+        throw new Error('Chat request failed');
       }
 
-      // Detect document type
-      const detectedType = catalog.find(doc =>
-        input.toLowerCase().includes(doc.type.toLowerCase().split(' ')[0])
-      );
-      if (detectedType) {
-        setDocumentType(detectedType);
+      const data: ChatResponse = await response.json();
+      setFields(data.fields || {});
+
+      if (data.document_type) {
+        const matchedType = catalog.find((doc) => doc.type === data.document_type) || null;
+        setDocumentType(matchedType);
       }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `ai-${Date.now()}`,
+          text: data.response,
+          sender: 'ai',
+        },
+      ]);
     } catch (error) {
-      console.error('Chat error:', error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `error-${Date.now()}`,
+          text: 'The assistant request failed. Check the backend and try again.',
+          sender: 'ai',
+        },
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
 
-  const allRequiredFieldsFilled = documentType &&
-    documentType.fields.every(field => field.required && fields[field.name]);
+  const requiredFieldsFilled = Boolean(
+    documentType &&
+      documentType.fields
+        .filter((field) => field.required)
+        .every((field) => String(fields[field.name] || '').trim())
+  );
 
-  const downloadPDF = async () => {
-    // Save document first if not saved
-    if (!savedDocId) {
-      try {
-        const response = await fetch('/api/documents', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: `${documentType?.type} - ${new Date().toLocaleDateString()}`,
-            document_type: documentType?.type,
-            fields
-          }),
-        });
-        const doc = await response.json();
-        setSavedDocId(doc.id);
-      } catch (error) {
-        alert('Failed to save document');
-        return;
-      }
+  const saveDocument = async () => {
+    if (!documentType) {
+      setStatusMessage('Select a document type first.');
+      return null;
     }
 
-    // Download PDF
-    const link = document.createElement('a');
-    link.href = `/api/documents/${savedDocId}/pdf`;
-    link.download = `${documentType?.type || 'document'}.pdf`;
-    link.click();
+    const payload = {
+      title: `${documentType.type} - ${new Date().toLocaleDateString()}`,
+      document_type: documentType.type,
+      fields,
+    };
+
+    const method = savedDocId ? 'PUT' : 'POST';
+    const url = savedDocId ? `/api/documents/${savedDocId}` : '/api/documents';
+
+    const response = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error('Save failed');
+    }
+
+    const document = await response.json();
+    setSavedDocId(document.id);
+    setStatusMessage('Document saved.');
+    return document;
+  };
+
+  const downloadPDF = async () => {
+    try {
+      const savedDocument = await saveDocument();
+      const documentId = savedDocument?.id || savedDocId;
+      if (!documentId) {
+        throw new Error('No document id available');
+      }
+
+      window.open(`/api/documents/${documentId}/pdf`, '_blank');
+    } catch (error) {
+      setStatusMessage('Failed to save or download the PDF.');
+    }
   };
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
-          {messages.map(message => (
-            <div key={message.id} style={{
-              marginBottom: '10px',
-              textAlign: message.sender === 'user' ? 'right' : 'left'
-            }}>
-              <div style={{
-                display: 'inline-block',
-                padding: '10px',
-                backgroundColor: message.sender === 'user' ? '#209dd7' : '#f0f0f0',
-                color: message.sender === 'user' ? 'white' : 'black',
-                borderRadius: '10px',
-                maxWidth: '70%'
-              }}>
+    <div className="workspace-grid">
+      <div className="panel chat-panel">
+        <div className="chat-header">
+          <div className="eyebrow">AI Drafting Assistant</div>
+          <h2 className="panel-title">
+            {documentType ? documentType.type : 'Start a new agreement'}
+          </h2>
+          <p className="helper-text" style={{ margin: '8px 0 0' }}>
+            Describe the document you need, then refine the extracted fields in the preview panel before saving.
+          </p>
+          {statusMessage ? <div className="status-pill">{statusMessage}</div> : null}
+        </div>
+        <div className="chat-stream">
+          {messages.map((message) => (
+            <div key={message.id} className={`message-row ${message.sender}`}>
+              <div className="message-bubble">
                 {message.text}
               </div>
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <div style={{ padding: '20px', borderTop: '1px solid #ccc' }}>
-          <div style={{ display: 'flex' }}>
+        <div className="chat-composer">
+          <div className="composer-row">
             <input
+              ref={inputRef}
+              className="field-input"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
+              onKeyDown={handleKeyPress}
+              placeholder="Describe the agreement or paste 'Field Name: value' lines"
               disabled={loading}
-              style={{ flex: 1, padding: '10px', marginRight: '10px' }}
             />
             <button
               onClick={sendMessage}
               disabled={loading || !input.trim()}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#753991',
-                color: 'white',
-                border: 'none',
-                cursor: 'pointer'
-              }}
+              className="primary-button"
+              style={{ minWidth: '132px', opacity: loading || !input.trim() ? 0.7 : 1 }}
             >
-              Send
+              {loading ? 'Sending...' : 'Send'}
             </button>
           </div>
         </div>
       </div>
-      <div style={{ width: '400px', borderLeft: '1px solid #ccc', padding: '20px' }}>
-        <h3>Document Preview</h3>
+      <div className="panel preview-panel">
+        <div className="preview-header">
+          <div className="eyebrow">Structured Preview</div>
+          <h3 className="panel-title">Document Preview</h3>
+          <p className="helper-text" style={{ margin: '8px 0 0' }}>
+            Validate extracted values and complete any missing fields before generating the final document.
+          </p>
+        </div>
+        <div className="preview-body">
         {documentType ? (
           <div>
-            <h4>{documentType.type}</h4>
-            {documentType.fields.map(field => (
-              <div key={field.name} style={{ marginBottom: '10px' }}>
-                <label>{field.label}:</label>
-                <input
-                  type={field.type === 'textarea' ? 'text' : field.type}
-                  value={fields[field.name] || ''}
-                  onChange={(e) => setFields(prev => ({ ...prev, [field.name]: e.target.value }))}
-                  style={{ width: '100%', padding: '5px' }}
-                />
+            <h4 style={{ color: '#032147', marginTop: 0 }}>{documentType.type}</h4>
+            {documentType.fields.map((field) => (
+              <div key={field.name} className="field-block">
+                <label className="field-label">
+                  {field.label}
+                  {field.required ? ' *' : ''}
+                </label>
+                {field.type === 'textarea' ? (
+                  <textarea
+                    className="field-input"
+                    value={fields[field.name] || ''}
+                    onChange={(e) => setFields((prev) => ({ ...prev, [field.name]: e.target.value }))}
+                    rows={4}
+                  />
+                ) : (
+                  <input
+                    className="field-input"
+                    type={field.type}
+                    value={fields[field.name] || ''}
+                    onChange={(e) => setFields((prev) => ({ ...prev, [field.name]: e.target.value }))}
+                  />
+                )}
               </div>
             ))}
-            {allRequiredFieldsFilled && (
+            <div className="action-stack">
+              <button
+                onClick={() => {
+                  saveDocument().catch(() => setStatusMessage('Failed to save document.'));
+                }}
+                className="secondary-button"
+                style={{ width: '100%' }}
+              >
+                Save Document
+              </button>
               <button
                 onClick={downloadPDF}
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  backgroundColor: '#753991',
-                  color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
-                  marginTop: '10px'
-                }}
+                disabled={!requiredFieldsFilled}
+                className="primary-button"
+                style={{ width: '100%', opacity: requiredFieldsFilled ? 1 : 0.6 }}
               >
                 Download PDF
               </button>
-            )}
+            </div>
           </div>
         ) : (
-          <p>Select a document type to preview</p>
+          <p className="helper-text">
+            Start by asking for one of the supported agreements, such as Mutual NDA or Cloud Service Agreement.
+          </p>
         )}
+        </div>
       </div>
     </div>
   );

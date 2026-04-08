@@ -22,7 +22,7 @@ export default function MyDocuments({ onLoadDocument }: { onLoadDocument: (doc: 
 
   const fetchDocuments = async () => {
     try {
-      const response = await fetch('/api/documents');
+      const response = await fetch('/api/documents', { credentials: 'include' });
       if (response.ok) {
         const data = await response.json();
         setDocuments(data);
@@ -34,7 +34,7 @@ export default function MyDocuments({ onLoadDocument }: { onLoadDocument: (doc: 
 
   const deleteDocument = async (id: number) => {
     try {
-      await fetch(`/api/documents/${id}`, { method: 'DELETE' });
+      await fetch(`/api/documents/${id}`, { method: 'DELETE', credentials: 'include' });
       setDocuments(prev => prev.filter(doc => doc.id !== id));
     } catch (error) {
       console.error('Failed to delete document:', error);
@@ -43,102 +43,58 @@ export default function MyDocuments({ onLoadDocument }: { onLoadDocument: (doc: 
 
   return (
     <>
-      <button
-        onClick={() => setShowModal(true)}
-        style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          padding: '10px',
-          backgroundColor: '#209dd7',
-          color: 'white',
-          border: 'none',
-          cursor: 'pointer'
-        }}
-      >
+      <button onClick={() => setShowModal(true)} className="ghost-button">
         My Documents
       </button>
       {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '20px',
-            borderRadius: '10px',
-            maxWidth: '600px',
-            width: '90%'
-          }}>
-            <h2>My Documents</h2>
-            {documents.length === 0 ? (
-              <p>No documents saved yet.</p>
-            ) : (
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                {documents.map(doc => (
-                  <li key={doc.id} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '10px',
-                    borderBottom: '1px solid #ccc'
-                  }}>
-                    <div>
-                      <strong>{doc.title}</strong> - {doc.document_type}
-                      <br />
-                      <small>{new Date(doc.created_at).toLocaleDateString()}</small>
-                    </div>
-                    <div>
-                      <button
-                        onClick={() => onLoadDocument(doc)}
-                        style={{
-                          marginRight: '10px',
-                          padding: '5px 10px',
-                          backgroundColor: '#209dd7',
-                          color: 'white',
-                          border: 'none',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Load
-                      </button>
+        <div className="modal-backdrop">
+          <div className="modal-card">
+            <div className="modal-header">
+              <h2 style={{ margin: 0 }}>My Documents</h2>
+              <p className="helper-text" style={{ margin: '6px 0 0' }}>
+                Reload previous drafts and continue working from the latest saved state.
+              </p>
+            </div>
+            <div className="modal-content">
+              {documents.length === 0 ? (
+                <p className="helper-text">No saved documents yet.</p>
+              ) : (
+                <div className="document-list">
+                  {documents.map(doc => (
+                    <div key={doc.id} className="document-card">
+                      <div className="document-meta">
+                        <strong>{doc.title}</strong>
+                        <span>{doc.document_type}</span>
+                        <br />
+                        <small>{new Date(doc.created_at).toLocaleString()}</small>
+                      </div>
+                      <div className="document-actions">
+                        <button
+                          onClick={() => {
+                            onLoadDocument(doc);
+                            setShowModal(false);
+                          }}
+                          className="secondary-button"
+                        >
+                          Load
+                        </button>
                       <button
                         onClick={() => deleteDocument(doc.id)}
-                        style={{
-                          padding: '5px 10px',
-                          backgroundColor: '#ecad0a',
-                          color: 'white',
-                          border: 'none',
-                          cursor: 'pointer'
-                        }}
+                        className="danger-button"
                       >
                         Delete
                       </button>
+                      </div>
                     </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <button
-              onClick={() => setShowModal(false)}
-              style={{
-                marginTop: '20px',
-                padding: '10px 20px',
-                backgroundColor: '#032147',
-                color: 'white',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              Close
-            </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button onClick={() => setShowModal(false)} className="ghost-button">
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
